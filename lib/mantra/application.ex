@@ -8,6 +8,11 @@ defmodule Mantra.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      {Redix, host: "localhost", port: 6379, name: :redix},
+      {Garf.GraphCache,
+       redix: :redix,
+       nodes: %{"Page" => Mantra.Contents.Page, "Block" => Mantra.Contents.Block},
+       edges: %{"BELONGS_TO" => Mantra.Contents.BelongsTo}},
       # Start the Telemetry supervisor
       MantraWeb.Telemetry,
       # Start the PubSub system
