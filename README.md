@@ -1,18 +1,11 @@
 # Mantra
 
-To start your Phoenix server:
+## Development
 
-  * Install dependencies with `mix deps.get`
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+Couchdb can be started and ran through docker by running:
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+```bash
+docker-compose up
+```
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+See `compose.yaml` for port, username, and password for couch instance. Given port is at "5984" then the admin interface for couch can be accesed at `localhost:5984/_utils`.
