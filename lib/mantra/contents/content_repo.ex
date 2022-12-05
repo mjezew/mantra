@@ -11,4 +11,7 @@ defmodule Mantra.Contents.ContentRepo do
               {:ok, Block.t()} | {:error, Changeset.t(Block.t())}
 
   @callback get_block_by(:id, block_id :: String.t()) :: Block.t() | nil
+
+  @callback add_block_to_block(Block.t(), Changeset.t(Block.t())) ::
+              {:ok, Block.t()} | {:error, Changeset.t(Block.t())}
 end

@@ -30,4 +30,20 @@ defmodule Mantra.Contents do
         {:error, :page_not_found}
     end
   end
+
+  def add_block_to_block(parent_block_id, block_params) do
+    case contents_repo().get_block_by(:id, parent_block_id) do
+      %Block{} = parent_block ->
+        block_changeset =
+          Block.create_changeset(
+            %Block{},
+            Map.put(block_params, :ancestors, [parent_block.id | parent_block.ancestors])
+          )
+
+        contents_repo().add_block_to_block(parent_block, block_changeset)
+
+      nil ->
+        {:error, :page_not_found}
+    end
+  end
 end
