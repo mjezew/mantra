@@ -4,6 +4,17 @@ defmodule Infra.CouchDB.ContentRepo do
   alias Infra.CouchDB
   alias Mantra.Contents.Page
 
+  def get_page_by(:id, page_id) do
+    case CouchDB.Documents.get_document("blocks", page_id) do
+      {:ok, %{status: 404}} ->
+        nil
+
+      {:ok, %{status: 200, body: doc}} ->
+        doc = movekeys(doc, [{"_rev", "rev"}, {"_id", "id"}])
+        Ecto.embedded_load(Page, doc, :atoms)
+    end
+  end
+
   def create_page(page_changeset) do
     with {:ok, page} <- Changeset.apply_action(page_changeset, :insert) do
       page_id = Slug.slugify(page.title, lowercase: false, separator: "__")
