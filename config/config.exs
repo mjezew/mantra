@@ -23,6 +23,9 @@ config :mantra, MantraWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :mantra, Mantra.Mailer, adapter: Swoosh.Adapters.Local
 
+# behaviours and contracts
+config :mantra, Mantra.Contents.ContentRepo, Infra.CouchDB.ContentRepo
+
 # Swoosh API client is needed for adapters other than SMTP.
 config :swoosh, :api_client, false
 
