@@ -2,7 +2,7 @@ defmodule Infra.CouchDB.ContentRepo do
   @behaviour Mantra.Contents.ContentRepo
   alias Ecto.Changeset
   alias Infra.CouchDB
-  alias Mantra.Contents.Page
+  alias Mantra.Contents.{Block, Page}
 
   @impl Mantra.Contents.ContentRepo
   def get_page_by(:id, page_id) do
@@ -36,12 +36,41 @@ defmodule Infra.CouchDB.ContentRepo do
     end
   end
 
+  @impl Mantra.Contents.ContentRepo
+  def add_block_to_page(page, block_changeset) do
+    with {:ok, block} <- Changeset.apply_action(block_changeset, :insert) do
+      block_id = "#{page.id}-#{Nanoid.generate()}"
+
+      case CouchDB.Documents.create_document("blocks", block_id, prepare_doc(block)) do
+        {:ok, %{status: status, body: doc}} when status in [201, 202] ->
+          doc =
+            doc
+            |> Map.take(["rev", "id"])
+            |> movekeys([{"rev", :rev}, {"id", :id}])
+
+          {:ok, Map.merge(block, Map.take(doc, [:id, :rev]))}
+
+        # TODO: Error handling
+        error ->
+          IO.inspect(error)
+          {:error, Changeset.add_error(block_changeset, :id, "cannot be created")}
+      end
+    end
+  end
+
   ## HELPERS
   # TODO: Probably repeated Doc -> model -> Doc code that can be abstracted eventually
   defp prepare_doc(%Page{} = page) do
     page
     |> Ecto.embedded_dump(:json)
     |> Map.put(:document_type, "page")
+    |> Map.drop([:id])
+  end
+
+  defp prepare_doc(%Block{} = block) do
+    block
+    |> Ecto.embedded_dump(:json)
+    |> Map.put(:document_type, "block")
     |> Map.drop([:id])
   end
 

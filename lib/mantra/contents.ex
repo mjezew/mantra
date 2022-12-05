@@ -1,5 +1,5 @@
 defmodule Mantra.Contents do
-  alias Mantra.Contents.Page
+  alias Mantra.Contents.{Block, Page}
   defp contents_repo(), do: Application.get_env(:mantra, Mantra.Contents.ContentRepo)
 
   @doc """
@@ -10,5 +10,24 @@ defmodule Mantra.Contents do
   def create_page(params) do
     Page.create_changeset(%Page{}, params)
     |> contents_repo().create_page()
+  end
+
+  @doc """
+  Add's block to a page.
+  """
+  def add_block_to_page(page_id, block_params) do
+    case contents_repo().get_page_by(:id, page_id) do
+      %Page{} = page ->
+        block_changeset =
+          Block.create_changeset(
+            %Block{},
+            Map.put(block_params, :ancestors, [page.id])
+          )
+
+        contents_repo().add_block_to_page(page, block_changeset)
+
+      nil ->
+        {:error, :page_not_found}
+    end
   end
 end
