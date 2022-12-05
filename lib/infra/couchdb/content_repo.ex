@@ -4,6 +4,7 @@ defmodule Infra.CouchDB.ContentRepo do
   alias Infra.CouchDB
   alias Mantra.Contents.Page
 
+  @impl Mantra.Contents.ContentRepo
   def get_page_by(:id, page_id) do
     case CouchDB.Documents.get_document("blocks", page_id) do
       {:ok, %{status: 404}} ->
@@ -15,6 +16,7 @@ defmodule Infra.CouchDB.ContentRepo do
     end
   end
 
+  @impl Mantra.Contents.ContentRepo
   def create_page(page_changeset) do
     with {:ok, page} <- Changeset.apply_action(page_changeset, :insert) do
       page_id = Slug.slugify(page.title, lowercase: false, separator: "__")
