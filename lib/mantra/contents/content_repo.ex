@@ -9,4 +9,6 @@ defmodule Mantra.Contents.ContentRepo do
 
   @callback add_block_to_page(Page.t(), Changeset.t(Block.t())) ::
               {:ok, Block.t()} | {:error, Changeset.t(Block.t())}
+
+  @callback get_block_by(:id, block_id :: String.t()) :: Block.t() | nil
 end

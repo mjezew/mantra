@@ -37,6 +37,18 @@ defmodule Infra.CouchDB.ContentRepo do
   end
 
   @impl Mantra.Contents.ContentRepo
+  def get_block_by(:id, block_id) do
+    case CouchDB.Documents.get_document("blocks", block_id) do
+      {:ok, %{status: 404}} ->
+        nil
+
+      {:ok, %{status: 200, body: doc}} ->
+        doc = movekeys(doc, [{"_rev", "rev"}, {"_id", "id"}])
+        Ecto.embedded_load(Block, doc, :atoms)
+    end
+  end
+
+  @impl Mantra.Contents.ContentRepo
   def add_block_to_page(page, block_changeset) do
     with {:ok, block} <- Changeset.apply_action(block_changeset, :insert) do
       block_id = "#{page.id}-#{Nanoid.generate()}"
