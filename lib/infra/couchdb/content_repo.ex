@@ -96,14 +96,14 @@ defmodule Infra.CouchDB.ContentRepo do
     page
     |> Ecto.embedded_dump(:json)
     |> Map.put(:document_type, "page")
-    |> Map.drop([:id])
+    |> Map.drop([:id, :rev])
   end
 
   defp prepare_doc(%Block{} = block) do
     block
     |> Ecto.embedded_dump(:json)
     |> Map.put(:document_type, "block")
-    |> Map.drop([:id])
+    |> Map.drop([:id, :rev])
   end
 
   defp movekeys(map, keys) do
